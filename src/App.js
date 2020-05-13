@@ -478,8 +478,9 @@ const posts = [
 ]
 
 const App = () => {
-  const [listItems, setListItems] = useState(posts.slice(0,50));
+  const [listItems, setListItems] = useState(posts.slice(0,20));
   const [isFetching, setIsFetching] = useState(false);
+  const [top, setTop] = useState(true);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -487,30 +488,32 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    if(top){
+      window.scrollTo(0, 0);
+    }
     if (!isFetching) return;
     fetchMoreListItems();
   }, [fetchMoreListItems, isFetching]);
 
   function handleScroll() {
+    setTop(false);
     if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || isFetching) return;
     setIsFetching(true);
   }
 
   function fetchMoreListItems() {
     setTimeout(() => {
-      // if(posts.length < listItems.length){
         setListItems(prevState => ([...prevState, ...posts.slice(listItems.length, (listItems.length + 20)|| "")]));
         setIsFetching(false);
-      // }
     }, 2000);
   }
-
+  
   return (
     <>
       <ul className="list-group mb-2">
         {listItems.map((listItem, i) => <li key={i} className="list-group-item"> {listItem.title}</li>)}
       </ul>
-      {isFetching && (
+      {isFetching && (listItems.length < posts.length) && (
         <div className="spinner-border" role="status">
             <span className="sr-only">Loading Loading...</span>
         </div>
