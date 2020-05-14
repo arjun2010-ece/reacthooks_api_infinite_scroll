@@ -956,13 +956,11 @@ const posts = [
 class App extends Component {
   constructor(props){
     super(props);
-    if (window.performance) {
-      if (performance.navigation.type === 1) {
-        window.onbeforeunload = function () {
-          window.scrollTo(0, 0);
-        }
-      }
+   // detect page refressh
+    window.onbeforeunload = function () {
+        window.scrollTo(0, 0);
     }
+      
   }
   render() {
     return (
