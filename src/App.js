@@ -959,8 +959,7 @@ class App extends Component {
    // detect page refressh
     window.onbeforeunload = function () {
         window.scrollTo(0, 0);
-    }
-      
+    }    
   }
   render() {
     return (
