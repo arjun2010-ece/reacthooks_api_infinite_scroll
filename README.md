@@ -15,7 +15,8 @@ Learnings are:
 3. how to detect when you have scrolled to the bottom.
 
 
-1. detect page refresh::
+
+A. detect page refresh::
    
    First way but not so feasible, we can give it a try::
    
@@ -42,7 +43,7 @@ Learnings are:
     }
    
    
- 2. how to put scrollbar to the top on page refresh.
+ B. how to put scrollbar to the top on page refresh.
     this should be a mix of detecting refresh and putting scrollbar on top. The code should be in constructor.
     
    constructor(props){
@@ -56,3 +57,18 @@ Learnings are:
  window.scrollTo(0, 0);
  this code should be there for putting the scroll on the top.
  
+ C. how to detect when you have scrolled to the bottom.
+ 
+    2 blocks of code does the tricks::
+    
+    useEffect(() => {
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+  
+    and in the listener function handleScroll::
+    
+    function handleScroll() {
+    if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || isFetching)             return;
+    setIsFetching(true);
+  }
