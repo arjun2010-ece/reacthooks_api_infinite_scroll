@@ -1,64 +1,81 @@
-import React, {useState, useEffect} from 'react';
-import axios from "axios";
+import React, { useState, useEffect } from "react";
 
-const Lists = () => {
-      const [page, setPage] = useState(1);
-      const [manifestList, setManifestList] = useState([]);
-      const [isFetching, setIsFetching] = useState(false);
 
-      useEffect(() => {
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-      }, []);
+function Lists() {
+  const [posts, setPosts] = useState([]);
+  const [freshposts, setFreshposts] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 7;
 
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      function getManifests(pageNo){
-          axios.get("http://localhost:3002/posts", { params: { _page: pageNo, _limit:20 } }).then(res => {
-                console.log("data...", res.data);
-                setManifestList([...manifestList, ...res.data]);
-                setIsFetching(false);
-          });
-      }
+  const getPosts = async () => {
+    // setIsFetching(true)
+    console.log("api request called....");
+    
+    const response = await fetch(
+      `https://jsonplaceholder.typicode.com/posts?_limit=${limit}&_page=${page}`
+    );
+    const data = await response.json();
+    setFreshposts(data);
+    setPosts([...posts, ...data]);
+    setIsFetching(false);
+    
+  };
 
-      useEffect(() => {
-        getManifests(page);
-      }, []);
+  function handleScroll() {
+    if (
+      window.innerHeight + document.documentElement.scrollTop !==
+      document.documentElement.offsetHeight
+    )
+      return;
+    setIsFetching(true);
+  }
 
-      useEffect(() => {
-        if (!isFetching){
-          return;
-        }
-        getManifests(page);
-        
-      }, [isFetching]);
+  function getMorePosts() {
+    // setTimeout(() => {
+      setPage(page + 1);
+      getPosts();
+    // }, 2000);
+  }
 
-      function handleScroll() {
-        if (
-          window.innerHeight + document.documentElement.scrollTop !==
-            document.documentElement.offsetHeight ||
-          isFetching
-        )
-          return;
-          console.log("bottom hit...");
-          let pageN = page + 1;
-          setPage(pageN);
-          setIsFetching(true);
-      }
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  console.log("page Number..", page);
+  useEffect(
+    () => {
+      getPosts();
+    },[]);
+
+  useEffect(() => {
+    if (!isFetching) return;
+    if(freshposts.length > 0){
+        getMorePosts();
+    }
+  }, [isFetching]);
+
+ console.log("page :", page);
+ console.log("data length: ", freshposts.length);
   
   return (
-    <div>Arjun and shiva best amigos third..fifth
-      <ul className="list-group mb-2">
-        {manifestList.map((listItem, i) => <li key={i} className="list-group-item"> {listItem.title}</li>)}
-      </ul>
-      {/* {isFetching  && (
-        <div className="spinner-border" role="status">
-            <span className="sr-only">Loading Loading...</span>
+    <div className="App">
+      {posts.map((post, index) => (
+        <div key={index} className="post">
+          <div className="number">{post.id}</div>
+          <div className="post-info">
+            <h2 className="post-title">{post.title}</h2>
+            <p className="post-body">{post.body}</p>
+          </div>
         </div>
-      )} */}
+      ))}
+      {isFetching && freshposts.length > 0 && (
+        <div className="spinner-border" role="status">
+            <span className="sr-only">Loading...</span>
+        </div>
+      )}
     </div>
   );
-};
+ }
 
 export default Lists;

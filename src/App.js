@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Slists from "./components/Slists";
+import Lists from "./components/Lists";
 
 class App extends Component {
   constructor(props){
@@ -13,7 +13,7 @@ class App extends Component {
     return (
       <div>
         <h3>This is a lists App.</h3>
-        <Slists />
+        <Lists />
       </div>
     )
   }
