@@ -1,7 +1,7 @@
 This is an amazing project with following features::
 
 1. Infinite loading of data with react hooks.
-2. <static data is used, no end point data is used here.
+2. Endpoint data is used.
 3. when page is scrolled at the bottom then a loading spinner is shown and after 2 second page gets reloaded.
 4. At any point if page is refreshed then scrollbar moves to the top.
 
