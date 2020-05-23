@@ -1,41 +1,34 @@
 import React, { useState, useEffect } from "react";
-
+import axios from "axios";
 
 function Lists() {
   const [posts, setPosts] = useState([]);
-  const [freshposts, setFreshposts] = useState([]);
+  const [newposts, setNewposts] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
   const [page, setPage] = useState(1);
-  const limit = 7;
-
-  const getPosts = async () => {
-    // setIsFetching(true)
-    console.log("api request called....");
-    
-    const response = await fetch(
-      `https://jsonplaceholder.typicode.com/posts?_limit=${limit}&_page=${page}`
-    );
-    const data = await response.json();
-    setFreshposts(data);
-    setPosts([...posts, ...data]);
-    setIsFetching(false);
-    
+  // let prevPage = usePrevious(page);
+  const LIMIT = 7;
+  
+  const getPosts = () => {
+    axios.get(`https://jsonplaceholder.typicode.com/posts?_limit=${LIMIT}&_page=${page}`)
+      .then(res => {
+        setNewposts(res.data);
+        setPosts([...posts, ...res.data]);
+        setIsFetching(false);
+      })
   };
 
-  function handleScroll() {
-    if (
-      window.innerHeight + document.documentElement.scrollTop !==
-      document.documentElement.offsetHeight
-    )
-      return;
-    setIsFetching(true);
-  }
-
-  function getMorePosts() {
-    // setTimeout(() => {
+  const getMorePosts= () => {
       setPage(page + 1);
       getPosts();
-    // }, 2000);
+  }
+
+  const handleScroll = () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop  !==
+      document.documentElement.offsetHeight
+    ) return;
+    setIsFetching(true);
   }
 
   useEffect(() => {
@@ -43,20 +36,19 @@ function Lists() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(
-    () => {
+  useEffect(() => {
       getPosts();
     },[]);
 
   useEffect(() => {
-    if (!isFetching) return;
-    if(freshposts.length > 0){
+    if (!isFetching){
+      return;
+    }
+    if( newposts.length > 0 ){
         getMorePosts();
+        console.log("CHECK RE RENDER...");
     }
   }, [isFetching]);
-
- console.log("page :", page);
- console.log("data length: ", freshposts.length);
   
   return (
     <div className="App">
@@ -69,9 +61,11 @@ function Lists() {
           </div>
         </div>
       ))}
-      {isFetching && freshposts.length > 0 && (
+      {isFetching && newposts.length > 0 && (
+        <div style = {{display: "flex", justifyContent:"center"}}>
         <div className="spinner-border" role="status">
             <span className="sr-only">Loading...</span>
+        </div>
         </div>
       )}
     </div>
