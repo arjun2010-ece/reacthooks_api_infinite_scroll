@@ -5,12 +5,11 @@ function Lists() {
   const [posts, setPosts] = useState([]);
   const [newposts, setNewposts] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
-  const [page, setPage] = useState(1);
-  // let prevPage = usePrevious(page);
+  const [page, setPage] = useState(2);
   const LIMIT = 7;
   
-  const getPosts = () => {
-    axios.get(`https://jsonplaceholder.typicode.com/posts?_limit=${LIMIT}&_page=${page}`)
+  const getPosts = (pageNo) => {
+    axios.get(`https://jsonplaceholder.typicode.com/posts?_limit=${LIMIT}&_page=${pageNo}`)
       .then(res => {
         setNewposts(res.data);
         setPosts([...posts, ...res.data]);
@@ -20,7 +19,7 @@ function Lists() {
 
   const getMorePosts= () => {
       setPage(page + 1);
-      getPosts();
+      getPosts(page);
   }
 
   const handleScroll = () => {
@@ -37,7 +36,7 @@ function Lists() {
   }, []);
 
   useEffect(() => {
-      getPosts();
+      getPosts(1);
     },[]);
 
   useEffect(() => {
